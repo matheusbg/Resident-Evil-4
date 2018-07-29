@@ -23,4 +23,4 @@ As a side note, the informations that are needed to code most of the standard pl
 &nbsp;
 
 ---
-Finally, if the companies responsable for the development of the game are feeling disrespected by this cheats, just contact me so I can remove this project.
+Finally, if the companies responsable for the development of the game are feeling disrespected by those cheats, just contact me so I can remove this project.
