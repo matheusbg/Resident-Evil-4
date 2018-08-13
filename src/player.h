@@ -20,6 +20,8 @@ namespace ResidentEvil4
     class Player : Object
     {
     public:
+        friend class CheatManager;
+        
         Player (Object* const associatedObject);
         ~Player ();
 
@@ -35,9 +37,6 @@ namespace ResidentEvil4
         void stunEnemies () const;
         void rapeEnemies () const;
         void teleportEnemies() const;
-
-
-        friend class CheatManager;
 
     protected:
     private:

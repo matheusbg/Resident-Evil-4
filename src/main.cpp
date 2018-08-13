@@ -2,7 +2,7 @@
 #include "cheat-manager.h"
 
 
-unsigned long __stdcall exitThread(void* args)
+unsigned long __stdcall unloadThread(void* args)
 {
     FreeLibraryAndExitThread(static_cast<HMODULE>(args), 0);
     return 0;
@@ -11,12 +11,18 @@ unsigned long __stdcall exitThread(void* args)
 
 unsigned long __stdcall mainThread(void* args)
 {
-    ResidentEvil4::CheatManager cheatManager;
-    cheatManager.work();
+    using namespace ResidentEvil4;
     
-    // We get here when the cheat manager stops working.
     //
-    CreateThread(NULL, NULL, exitThread, args, NULL, NULL);
+    // Cheat's loop.
+    //
+    CheatManager cheatManager;
+    cheatManager.work();    
+
+    //
+    // Unload the cheat (i.e. when the cheat manager stops working).
+    //
+    CreateThread(NULL, NULL, unloadThread, args, NULL, NULL);
     return 0;
 }
 
