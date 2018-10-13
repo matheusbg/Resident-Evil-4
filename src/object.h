@@ -12,8 +12,7 @@ namespace ResidentEvil4
         friend class Player;
 
     protected:
-        // TODO: add more object types.
-        //
+        /* TODO: add more object types. */
         enum class ObjectTypes
         {
             ENTITY = 0x009D3558,
@@ -43,7 +42,7 @@ namespace ResidentEvil4
         unsigned char gap5[0x1];
         unsigned char m_weaponTypeHittedBy; // 0x406
 
-        unsigned char gap6[0x7F8];
+        unsigned char gap6[0x4C9];
         ArmsInformation* m_armsInformation; // 0x8D0
 
     private:

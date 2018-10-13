@@ -19,12 +19,11 @@ namespace ResidentEvil4
     {
         while (m_isWorking)
         {
-            // [Hack-ish]
-            // We need to keep updating the player's associated object pointer 
-            // since the game changes it in some cases (switching stages is an
-            // example). It is possible to hook the function(s) that changes
-            // it, but this will do for now.
-            //
+            /* [Hack-ish]
+               We need to keep updating the player's associated object pointer 
+               since the game changes it in some cases (switching stages is an
+               example). It is possible to hook the function(s) that changes
+               it, but this will do for now. */
             m_player.m_associatedObject = *(Object**)g_playerAddress;
 
             manageHotkeys();
@@ -56,6 +55,11 @@ namespace ResidentEvil4
             m_player.teleportEnemies();
             Sleep(250);
         }
+        if (GetAsyncKeyState(VK_F4) & 0x8000)
+        {
+            m_player.debug();
+            //Sleep(250);
+        }
         if (GetAsyncKeyState(VK_SHIFT) & 0x8000 &&
             GetAsyncKeyState(VK_F11) & 0x8000)
         {
@@ -66,8 +70,8 @@ namespace ResidentEvil4
 
     void CheatManager::manageTeleportCheat ()
     {
-        const auto teleportIndex = GET_ENUM_VALUE(Player::TogglingCheatTypes::TELEPORT);
-        if (m_player.m_togglingCheatsStates[teleportIndex])
+        auto teleportIndex = GET_ENUM_VALUE(Player::TogglingCheats::TELEPORT);
+        if ( m_player.m_togglingCheatsStatus[teleportIndex] )
         {
             if (GetAsyncKeyState(0x57 /* w */) & 0x8000)
             {

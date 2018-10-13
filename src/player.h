@@ -38,30 +38,32 @@ namespace ResidentEvil4
         void rapeEnemies () const;
         void teleportEnemies() const;
 
+        void debug ();
+
     protected:
     private:
-        enum class TogglingCheatTypes
+        enum class TogglingCheats
         {
             TELEPORT,
             END
         };
 
         
-        // Hack-ish. Maybe there is a better (OO) way?
-        //
+        /* Hack-ish. Maybe there is a better (OO) way? */
         Object* m_associatedObject;
 
-        // 0: disabled; 1: enabled. All toggling cheats are disabled by default.
-        //
-        std::array<bool, GET_ENUM_VALUE(TogglingCheatTypes::END)> m_togglingCheatsStates {};
+        /* 0 -> disabled | 1 -> enabled. All toggling cheats are disabled by default. */
+        std::array<bool, GET_ENUM_VALUE(TogglingCheats::END)> m_togglingCheatsStatus {};
 
         float m_teleportDistance;
 
-        std::unique_ptr<unsigned long> m_dummy = std::make_unique<unsigned long>();
+        std::unique_ptr<unsigned long> m_dummy = std::make_unique<unsigned long> ();
 
 
         void traverseObjects (std::function<void (Object* const)> performAction) const;
         void hitEnemies (const unsigned char weaponType) const;
+
+        Object* getClosestEnemy () const;
 
     };
 

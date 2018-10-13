@@ -2,31 +2,28 @@
 #include "cheat-manager.h"
 
 
-unsigned long __stdcall unloadThread(void* args)
+unsigned long __stdcall unloadThread (void* args)
 {
     FreeLibraryAndExitThread(static_cast<HMODULE>(args), 0);
     return 0;
 }
 
 
-unsigned long __stdcall mainThread(void* args)
+unsigned long __stdcall mainThread (void* args)
 {
     using namespace ResidentEvil4;
     
-    //
-    // Cheat's loop.
-    //
+    /* Cheat's loop. */
     CheatManager cheatManager;
     cheatManager.work();    
 
-    //
-    // Unload the cheat (i.e. when the cheat manager stops working).
-    //
+    /* Unload module (i.e. when the cheat manager stops working). */
     CreateThread(NULL, NULL, unloadThread, args, NULL, NULL);
+
     return 0;
 }
 
-bool __stdcall DllMain(
+bool __stdcall DllMain (
         HINSTANCE instance,
         unsigned long reason,
         void* reserved
