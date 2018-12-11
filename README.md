@@ -1,11 +1,10 @@
 # Resident Evil 4
 Welcome!
 
-This project was started for learning purposes. If anyone wants to contribute or give any ideas, please do!
-Information about compilation and a description about some planned features are below.
+This project was started for learning purposes. Contribution is allowed and encouraged!
 
-# Compilation
-This project was successfully compiled on Visual C++ 14.0 (Visual Studio's 2015 default compiler). I did not try to compile in other compilers, so you need to do so on your own if you want it.
+# Building
+This project was successfully compiled in Visual C++ 14.0 (Visual Studio's 2015 default compiler). I did not try to compile in other compilers, so you need to do so on your own if you want it.
 
 # Todo
 Before listing, it needs to be clear that the current state of the cheat is a bare prototype. One can check the list of implemented cheats by accessing the cheat-manager file on src/cheat-manager.cpp.
