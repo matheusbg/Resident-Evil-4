@@ -13,8 +13,8 @@ Also, the cheats which involve enemies were tested only with common ones (not in
 
 So, without further ado, the planned features are:
 - [ ] Aimbot
-* - [ ] Target is the closest enemy from crosshair
-* - [ ] Target is the closest enemy from player's position
+* - [ ] target is the closest enemy from crosshair
+* - [ ] target is the closest enemy from player's position
 - [ ] Inventory Manager
 * - [ ] add items
 * - [ ] remove items
