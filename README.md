@@ -11,7 +11,7 @@ You should know that the current state of the cheat is a bare prototype. It is p
 
 Also, the cheats which involve enemies were tested only with common ones (not including special ones and bosses). If they do not work with those last two, you can easily fix by debugging all enemy types and adding those in the code (or wait until I can add it).
 
-So, without further ado, the planned features are:
+Without further ado, the planned features are:
 - [ ] Aimbot
 * - [ ] target is the closest enemy from crosshair
 * - [ ] target is the closest enemy from player's position
