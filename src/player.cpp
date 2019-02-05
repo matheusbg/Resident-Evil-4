@@ -21,6 +21,12 @@ namespace ResidentEvil4
         auto teleportIndex = GET_ENUM_VALUE(TogglingCheats::TELEPORT);
         m_togglingCheatsStatus[teleportIndex] = !m_togglingCheatsStatus[teleportIndex];
     }
+
+    void Player::toggleESP ()
+    {
+        auto ESPIndex = GET_ENUM_VALUE (TogglingCheats::ESP);
+        m_togglingCheatsStatus[ESPIndex] = !m_togglingCheatsStatus[ESPIndex];
+    }
     
     void Player::teleportForward ()
     {
@@ -148,32 +154,35 @@ namespace ResidentEvil4
 
     void Player::debug ()
     {
-        /*Object* closestEnemy = getClosestEnemy();
+        /*auto closestEnemy = getClosestEnemy();
         if (closestEnemy == nullptr) return;
         
         auto u = closestEnemy->m_position - m_associatedObject->m_position;
         u.normalize();
         
         Vector3<float> i(1, 0, 0);
-        float fixedHorizontalAngle = std::acos(
-            i.dot(u) / ( i.getMagnitude() * u.getMagnitude() )
-        );
+        u.m_z = 0;
+        float fixedHorizontalAngle = std::acos( i.dot(u) );
         m_associatedObject->m_bodyHorizontalRotation = (
             (u.m_y > 0.0f) ? fixedHorizontalAngle : -fixedHorizontalAngle
         );
+        m_associatedObject->m_bodyHorizontalRotation = fixedHorizontalAngle;
 
         // ...
 
-        auto file = fopen("debug.txt", "w");
+        auto file = fopen("C:\\Users\\Matheus\\Desktop\\debug.txt", "w");
         if (file != nullptr)
         {
+            auto enemyPos = closestEnemy->m_position;
+            auto myPos = m_associatedObject->m_position;
+            auto myRot = m_associatedObject->m_bodyHorizontalRotation;
+            
             fprintf(
                 file,
-                "u = (%f, %f, %f)\nV Rot : %f\n\n",
-                u.m_x,
-                u.m_y,
-                u.m_z,
-                m_associatedObject->m_armsInformation->verticalRotation
+                "My pos : (%f, %f, %f)\nEnemy pos : (%f, %f, %f)\nMy rot : %f\n",
+                myPos.m_x, myPos.m_y, myPos.m_z,
+                enemyPos.m_x, enemyPos.m_y, enemyPos.m_z,
+                myRot
             );
             
             fclose(file);

@@ -3,6 +3,9 @@
 
 namespace ResidentEvil4
 {
+    extern unsigned long g_d3d9DeviceAddress;
+
+
     extern unsigned long g_playerAddress;
 
     extern unsigned long g_objectsArrayBaseAddress;

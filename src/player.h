@@ -20,6 +20,14 @@ namespace ResidentEvil4
     class Player : Object
     {
     public:
+        enum class TogglingCheats
+        {
+            TELEPORT,
+            ESP,
+            END
+        };
+        
+
         friend class CheatManager;
         
         Player (Object* const associatedObject);
@@ -27,6 +35,7 @@ namespace ResidentEvil4
 
 
         void toggleTeleport ();
+        void toggleESP ();
         void teleportForward ();
         void teleportBackward ();
         void teleportUpward ();
@@ -42,13 +51,6 @@ namespace ResidentEvil4
 
     protected:
     private:
-        enum class TogglingCheats
-        {
-            TELEPORT,
-            END
-        };
-
-        
         /* Hack-ish. Maybe there is a better (OO) way? */
         Object* m_associatedObject;
 

@@ -4,6 +4,9 @@
 
 namespace ResidentEvil4
 {
+    unsigned long g_d3d9DeviceAddress = 0x57DCDA8 + 0x2C;
+    
+    
     unsigned long g_playerAddress = 0x033F6EAC;
 
     unsigned long g_objectsArrayBaseAddress = g_playerAddress;
