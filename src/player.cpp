@@ -87,7 +87,6 @@ namespace ResidentEvil4
             [&](Object* const object)
             {
                 auto objectType = *(unsigned long*)object;
-                /* Change this hack-ish way of detecting enemies later. */
                 if ( objectType == GET_ENUM_VALUE(ObjectTypes::ENTITY) )
                 {
                     object->m_unknownPtr = m_dummy.get();
@@ -114,7 +113,6 @@ namespace ResidentEvil4
             [&](Object* const object)
             {
                 auto objectType = *(unsigned long*)object;
-                /* Change this hack-ish way of detecting enemies later. */
                 if ( objectType == GET_ENUM_VALUE(ObjectTypes::ENTITY) )
                 {
                     auto playerPosition = m_associatedObject->m_position;
@@ -135,7 +133,6 @@ namespace ResidentEvil4
             [&](Object* const object)
             {
                 auto objectType = *(unsigned long*)object;
-                /* Change this hack-ish way of detecting enemies later. */
                 if ( objectType == GET_ENUM_VALUE(ObjectTypes::ENTITY) )
                 {
                     auto u = object->m_position - m_associatedObject->m_position;
@@ -160,7 +157,7 @@ namespace ResidentEvil4
         auto u = closestEnemy->m_position - m_associatedObject->m_position;
         u.normalize();
         
-        Vector3<float> i(1, 0, 0);
+        Vector3<float> i(1.0f, 0.0f, 0.0f);
         u.m_z = 0;
         float fixedHorizontalAngle = std::acos( i.dot(u) );
         m_associatedObject->m_bodyHorizontalRotation = (

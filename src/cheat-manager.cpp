@@ -28,8 +28,6 @@ namespace ResidentEvil4
 
             manageHotkeys();
             manageTeleportCheat();
-
-            Sleep(25);
         }
     }
 
@@ -81,18 +79,22 @@ namespace ResidentEvil4
             if (GetAsyncKeyState(0x57 /* w */) & 0x8000)
             {
                 m_player.teleportForward();
+                Sleep (25);
             }
             if (GetAsyncKeyState(0x53 /* s */) & 0x8000)
             {
                 m_player.teleportBackward();
+                Sleep (25);
             }
             if (GetAsyncKeyState(VK_NUMPAD8) & 0x8000)
             {
                 m_player.teleportUpward();
+                Sleep (25);
             }
             if (GetAsyncKeyState(VK_NUMPAD2) & 0x8000)
             {
                 m_player.teleportDownward();
+                Sleep (25);
             }
         }
     }

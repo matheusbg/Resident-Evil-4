@@ -12,6 +12,7 @@ namespace ResidentEvil4
         friend class Player;
 
     protected:
+        /* Change this hack-ish way of detecting enemies later. */
         /* TODO: add more object types. */
         enum class ObjectTypes
         {

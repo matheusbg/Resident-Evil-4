@@ -3,43 +3,27 @@
 #include "addresses.h"
 #include "cheat-manager.h"
 
-#include "d3dx9.h"
 #include "MinHook.h"
 
 
 namespace ResidentEvil4
 {
-#define DEFAULT_FVF (D3DFVF_XYZRHW | D3DFVF_DIFFUSE)
-    
-    unsigned long** g_d3d9VTable;
-    
+    unsigned long** D3D::m_d3d9VTable;
 
     using EndScene = HRESULT (WINAPI*) (IDirect3DDevice9*);
-    HRESULT WINAPI EndSceneHook (IDirect3DDevice9*);
-    EndScene g_originalEndSceneFn;
+    EndScene D3D::m_originalEndSceneFn;
 
     
-    typedef struct
-    {
-        float x, y, z, rhw;
-        DWORD color;
-    } Vertex;
-
-    
-    static void drawRectangle (
+    void D3D::drawLine (
             IDirect3DDevice9* const device,
-            const float x,
-            const float y,
-            const float w,
-            const float h,
-            const unsigned char r,
-            const unsigned char g,
-            const unsigned char b
+            const D3DXVECTOR2 &from,
+            const D3DXVECTOR2 &to,
+            const DWORD color
         )
     {
         IDirect3DVertexBuffer9* vertexBuffer;
         device->CreateVertexBuffer (
-            5 * sizeof (Vertex),
+            2 * sizeof (Vertex),
             0,
             DEFAULT_FVF,
             D3DPOOL_MANAGED,
@@ -48,11 +32,8 @@ namespace ResidentEvil4
         );
 
         const Vertex vertices[] = {
-            { x, y, 0.0f, 1.0f, D3DCOLOR_XRGB (r, g, b) },
-            { x + w, y, 0.0f, 1.0f, D3DCOLOR_XRGB (r, g, b) },
-            { x + w, y - h, 0.0f, 1.0f, D3DCOLOR_XRGB (r, g, b) },
-            { x, y - h, 0.0f, 1.0f, D3DCOLOR_XRGB (r, g, b) },
-            { x, y, 0.0f, 1.0f, D3DCOLOR_XRGB (r, g, b) }
+            { from.x, from.y, 0.0f, 1.0f, color },
+            { to.x, to.y, 0.0f, 1.0f, color }
         };
 
         void* data;
@@ -69,18 +50,46 @@ namespace ResidentEvil4
 
         device->SetFVF (DEFAULT_FVF);
         device->SetStreamSource ( 0, vertexBuffer, 0, sizeof (Vertex) );
-        device->DrawPrimitive (D3DPT_LINESTRIP, 0, 4);
+        device->DrawPrimitive (D3DPT_LINESTRIP, 0, 1);
+
+        vertexBuffer->Release ();
+    }
+    
+    void D3D::drawRectangle (
+            IDirect3DDevice9* const device,
+            const D3DXVECTOR2 &pos,
+            const float w,
+            const float h,
+            const DWORD color
+        )
+    {
+        const float x = pos.x, y = pos.y;
+        const D3DXVECTOR2 corners[] = {
+            /* Top left. */
+            { x, y },
+            /* Top right. */
+            { x + w, y },
+            /* Bottom right. */
+            { x + w, y - h },
+            /* Bottom left. */
+            { x, y - h }
+        };
+        
+        drawLine (device, corners[0], corners[1], color);
+        drawLine (device, corners[1], corners[2], color);
+        drawLine (device, corners[2], corners[3], color);
+        drawLine (device, corners[3], corners[0], color);
     }
     
     
-    static HRESULT WINAPI EndSceneHook (IDirect3DDevice9* device)
+    HRESULT WINAPI D3D::EndSceneHook (IDirect3DDevice9* device)
     {
         if ( CheatManager::getInstance().isCheatToggled (Player::TogglingCheats::ESP) )
         {
-            drawRectangle (device, 250, 250, 100, 100, 0xFF, 0x0, 0x0);
+            drawRectangle ( device, { 250.0f, 250.0f }, 100.0f, 100.0f, D3DCOLOR_XRGB (0xFF, 0x0, 0x0) );
         }
         
-        return g_originalEndSceneFn (device);
+        return m_originalEndSceneFn (device);
     }
     
 
@@ -93,7 +102,7 @@ namespace ResidentEvil4
             Sleep (100);
         } while (d3d9Device == nullptr);
 
-        g_d3d9VTable = *(unsigned long***)d3d9Device;
+        m_d3d9VTable = *(unsigned long***)d3d9Device;
 
         if (MH_Initialize () != MH_OK)
         {
@@ -106,13 +115,13 @@ namespace ResidentEvil4
         /* Hook EndScene. */
         hooksResult = []() -> bool
                       {
-                          g_originalEndSceneFn = (EndScene)g_d3d9VTable[42];
-                          if (MH_CreateHook (g_d3d9VTable[42], &EndSceneHook,
-                              (void**)&g_originalEndSceneFn) != MH_OK)
+                          m_originalEndSceneFn = (EndScene)m_d3d9VTable[42];
+                          if (MH_CreateHook (m_d3d9VTable[42], &EndSceneHook,
+                              (void**)&m_originalEndSceneFn) != MH_OK)
                           {
                               return false;
                           }
-                          if (MH_EnableHook ( g_d3d9VTable[42] ) != MH_OK)
+                          if (MH_EnableHook ( m_d3d9VTable[42] ) != MH_OK)
                           {
                               return false;
                           }
@@ -126,7 +135,7 @@ namespace ResidentEvil4
     bool D3D::unhook ()
     {
         /* Unhook EndScene. */
-        if (MH_RemoveHook ( g_d3d9VTable[42] ) != MH_OK)
+        if (MH_RemoveHook ( m_d3d9VTable[42] ) != MH_OK)
         {
             return false;
         }
