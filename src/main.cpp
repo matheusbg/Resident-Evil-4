@@ -2,12 +2,18 @@
 #include "cheat-manager.h"
 #include "d3d.h"
 
+#include "utils/console.h"
+
 
 DWORD WINAPI unloadThread (LPVOID args)
 {
     using namespace ResidentEvil4;
 
     D3D::unhook ();
+
+#ifdef _DEBUG
+    detachConsole ();
+#endif
 
     FreeLibraryAndExitThread( (HMODULE)args, 0 );
     return 0;
@@ -18,6 +24,11 @@ DWORD WINAPI mainThread (LPVOID args)
 {
     using namespace ResidentEvil4;
     
+#ifdef _DEBUG
+    /* Setup debugging console. */
+    bindConsole (true, true, true);
+#endif
+
     D3D::hook ();
 
     /* Cheat's loop. */

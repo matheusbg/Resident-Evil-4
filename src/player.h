@@ -47,7 +47,9 @@ namespace ResidentEvil4
         void rapeEnemies () const;
         void teleportEnemies() const;
 
+#ifdef _DEBUG
         void debug ();
+#endif
 
     protected:
     private:

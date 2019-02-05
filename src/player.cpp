@@ -149,41 +149,35 @@ namespace ResidentEvil4
         return closestEnemy;
     }
 
+#ifdef _DEBUG
     void Player::debug ()
     {
-        /*auto closestEnemy = getClosestEnemy();
+        auto closestEnemy = getClosestEnemy();
         if (closestEnemy == nullptr) return;
         
         auto u = closestEnemy->m_position - m_associatedObject->m_position;
         u.normalize();
         
-        Vector3<float> i(1.0f, 0.0f, 0.0f);
+        /*Vector3<float> i(1.0f, 0.0f, 0.0f);
         u.m_z = 0;
         float fixedHorizontalAngle = std::acos( i.dot(u) );
         m_associatedObject->m_bodyHorizontalRotation = (
             (u.m_y > 0.0f) ? fixedHorizontalAngle : -fixedHorizontalAngle
         );
-        m_associatedObject->m_bodyHorizontalRotation = fixedHorizontalAngle;
+        m_associatedObject->m_bodyHorizontalRotation = fixedHorizontalAngle;*/
 
         // ...
 
-        auto file = fopen("C:\\Users\\Matheus\\Desktop\\debug.txt", "w");
-        if (file != nullptr)
-        {
-            auto enemyPos = closestEnemy->m_position;
-            auto myPos = m_associatedObject->m_position;
-            auto myRot = m_associatedObject->m_bodyHorizontalRotation;
-            
-            fprintf(
-                file,
-                "My pos : (%f, %f, %f)\nEnemy pos : (%f, %f, %f)\nMy rot : %f\n",
-                myPos.m_x, myPos.m_y, myPos.m_z,
-                enemyPos.m_x, enemyPos.m_y, enemyPos.m_z,
-                myRot
-            );
-            
-            fclose(file);
-        }*/
+        auto enemyPos = closestEnemy->m_position;
+        auto myPos = m_associatedObject->m_position;
+        auto myRot = m_associatedObject->m_bodyHorizontalRotation;
+        
+        std::cout << "My pos : (" << myPos.m_x << ", " << myPos.m_y <<
+            ", " << myPos.m_z << ")" << std::endl;
+        std::cout << "Enemy pos : (" << enemyPos.m_x << ", " << enemyPos.m_y <<
+            ", " << enemyPos.m_z << ")" << std::endl;
+        std::cout << "My rot : " << myRot << std::endl;
     }
+#endif
 
 }

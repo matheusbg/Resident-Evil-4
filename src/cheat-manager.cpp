@@ -58,11 +58,13 @@ namespace ResidentEvil4
             m_player.toggleESP ();
             Sleep (250);
         }
+#ifdef _DEBUG
         if (GetAsyncKeyState(VK_F5) & 0x8000)
         {
             m_player.debug();
             Sleep(250);
         }
+#endif
         if (GetAsyncKeyState(VK_SHIFT) & 0x8000 &&
             GetAsyncKeyState(VK_F11) & 0x8000)
         {
