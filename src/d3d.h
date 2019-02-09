@@ -27,6 +27,8 @@ namespace ResidentEvil4
         static unsigned long** m_d3d9VTable;
 
         /* Prototype & Original address of hooked function(s). */
+        ////////////////////////////////////////////////////////////////////////
+
         using EndScene = HRESULT (WINAPI*) (IDirect3DDevice9*);
         static EndScene m_originalEndSceneFn;
 
@@ -48,6 +50,8 @@ namespace ResidentEvil4
 
 
         /* Hooks. */
+        ////////////////////////////////////////////////////////////////////////
+
         static HRESULT WINAPI EndSceneHook (IDirect3DDevice9* device);
 
     };

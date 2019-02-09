@@ -1,126 +1,150 @@
 #include "../common.h"
 #include "console.h"
 
-#include <stdio.h>
-#include <io.h>
-#include <fcntl.h>
+
+bool Console::m_isBound = false;
+
+Console::StdHandle Console::m_stdHandle;
+
+HWND Console::m_wnd;
 
 
-void bindConsole (bool bindStdIn, bool bindStdOut, bool bindStdErr)
+void Console::adjust (LONG x, LONG y, LONG width, LONG height)
 {
-    AllocConsole ();
-    
-    // Re-initialize the C runtime "FILE" handles with clean handles bound to "nul". We do this because it has been
-    // observed that the file number of our standard handle file objects can be assigned internally to a value of -2
-    // when not bound to a valid target, which represents some kind of unknown internal invalid state. In this state our
-    // call to "_dup2" fails, as it specifically tests to ensure that the target file number isn't equal to this value
-    // before allowing the operation to continue. We can resolve this issue by first "re-opening" the target files to
-    // use the "nul" device, which will place them into a valid state, after which we can redirect them to our target
-    // using the "_dup2" function.
-    if (bindStdIn)
+    if (x == 0 && y == 0 && width == 0 && height == 0)
     {
-        FILE* dummyFile;
-        freopen_s (&dummyFile, "nul", "r", stdin);
-    }
-    if (bindStdOut)
-    {
-        FILE* dummyFile;
-        freopen_s (&dummyFile, "nul", "w", stdout);
-    }
-    if (bindStdErr)
-    {
-        FILE* dummyFile;
-        freopen_s (&dummyFile, "nul", "w", stderr);
+        RECT desktopRect;
+        auto desktopHandle = GetDesktopWindow ();
+        GetWindowRect (desktopHandle, &desktopRect);
+        
+        RECT consoleRect;
+        GetWindowRect (m_wnd, &consoleRect);
+        width = consoleRect.right - consoleRect.left;
+        height = consoleRect.bottom - consoleRect.top;
+
+        x = (desktopRect.right - desktopRect.left - width) / 2;
+        y = (desktopRect.bottom - desktopRect.top - height) / 2;
     }
 
-    // Redirect unbuffered stdin from the current standard input handle
-    if (bindStdIn)
-    {
-        HANDLE stdHandle = GetStdHandle (STD_INPUT_HANDLE);
-        if (stdHandle != INVALID_HANDLE_VALUE)
-        {
-            int fileDescriptor = _open_osfhandle ((intptr_t)stdHandle, _O_TEXT);
-            if (fileDescriptor != -1)
-            {
-                FILE* file = _fdopen (fileDescriptor, "r");
-                if (file != NULL)
-                {
-                    int dup2Result = _dup2 (_fileno (file), _fileno (stdin));
-                    if (dup2Result == 0)
-                    {
-                        setvbuf (stdin, NULL, _IONBF, 0);
-                    }
-                }
-            }
-        }
-    }
-
-    // Redirect unbuffered stdout to the current standard output handle
-    if (bindStdOut)
-    {
-        HANDLE stdHandle = GetStdHandle (STD_OUTPUT_HANDLE);
-        if (stdHandle != INVALID_HANDLE_VALUE)
-        {
-            int fileDescriptor = _open_osfhandle ((intptr_t)stdHandle, _O_TEXT);
-            if (fileDescriptor != -1)
-            {
-                FILE* file = _fdopen (fileDescriptor, "w");
-                if (file != NULL)
-                {
-                    int dup2Result = _dup2 (_fileno (file), _fileno (stdout));
-                    if (dup2Result == 0)
-                    {
-                        setvbuf (stdout, NULL, _IONBF, 0);
-                    }
-                }
-            }
-        }
-    }
-
-    // Redirect unbuffered stderr to the current standard error handle
-    if (bindStdErr)
-    {
-        HANDLE stdHandle = GetStdHandle (STD_ERROR_HANDLE);
-        if (stdHandle != INVALID_HANDLE_VALUE)
-        {
-            int fileDescriptor = _open_osfhandle ((intptr_t)stdHandle, _O_TEXT);
-            if (fileDescriptor != -1)
-            {
-                FILE* file = _fdopen (fileDescriptor, "w");
-                if (file != NULL)
-                {
-                    int dup2Result = _dup2 (_fileno (file), _fileno (stderr));
-                    if (dup2Result == 0)
-                    {
-                        setvbuf (stderr, NULL, _IONBF, 0);
-                    }
-                }
-            }
-        }
-    }
-
-    // Clear the error state for each of the C++ standard stream objects. We need to do this, as attempts to access the
-    // standard streams before they refer to a valid target will cause the iostream objects to enter an error state. In
-    // versions of Visual Studio after 2005, this seems to always occur during startup regardless of whether anything
-    // has been read from or written to the targets or not.
-    if (bindStdIn)
-    {
-        std::wcin.clear ();
-        std::cin.clear ();
-    }
-    if (bindStdOut)
-    {
-        std::wcout.clear ();
-        std::cout.clear ();
-    }
-    if (bindStdErr)
-    {
-        std::wcerr.clear ();
-        std::cerr.clear ();
-    }
+    MoveWindow (m_wnd, x, y, width, height, TRUE);
 }
 
-void detachConsole ()
+void Console::bind (
+        const LPCTSTR name,
+        const bool topmost,
+        const Colors textColor,
+        const LONG x,
+        const LONG y,
+        const LONG width,
+        const LONG height
+    )
 {
+    /* Attach a console to our current process.
+       Note: a process can have only one console. */
+    AllocConsole ();
+
+    /* Initialize private variables. */
+    m_stdHandle.in = GetStdHandle (STD_INPUT_HANDLE);
+    m_stdHandle.out = GetStdHandle (STD_OUTPUT_HANDLE);
+    m_stdHandle.error = GetStdHandle (STD_ERROR_HANDLE);
+
+    m_wnd = GetConsoleWindow ();
+
+    adjust (x, y, width, height);
+
+    if (topmost)
+    {
+        SetWindowPos (m_wnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+    }
+
+    SetConsoleTitle (name);
+
+    /* Indicates that our console is ready for use. */
+    m_isBound = true;
+
+    setTextColor (textColor);
+}
+
+void Console::detach ()
+{
+    if (!m_isBound) return;
+    
     FreeConsole ();
+
+    m_isBound = false;
+}
+
+void Console::write (const std::string &message)
+{
+    if (!m_isBound) return;
+    
+    DWORD charsWritten;
+    WriteConsole (
+        m_stdHandle.out,
+        message.c_str (),
+        message.length (),
+        &charsWritten,
+        nullptr
+    );
+}
+
+void Console::clear ()
+{
+    if (!m_isBound) return;
+    
+    system ("cls");
+}
+
+void Console::setTextColor (const Colors color)
+{
+    if (!m_isBound) return;
+    
+    WORD attributes = 0;
+    
+    switch (color)
+    {
+    case Colors::RED:
+        {
+            attributes |= FOREGROUND_RED;
+        }
+        break;
+
+    case Colors::GREEN:
+        {
+            attributes |= FOREGROUND_GREEN;
+        }
+        break;
+
+    case Colors::BLUE:
+        {
+            attributes |= FOREGROUND_BLUE;
+        }
+        break;
+
+    case Colors::WHITE:
+        {
+            attributes |= FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
+        }
+        break;
+
+    case Colors::PINK:
+        {
+            attributes |= FOREGROUND_RED | FOREGROUND_BLUE;
+        }
+        break;
+
+    case Colors::CYAN:
+        {
+            attributes |= FOREGROUND_GREEN | FOREGROUND_BLUE;
+        }
+        break;
+
+    case Colors::YELLOW:
+        {
+            attributes |= FOREGROUND_RED | FOREGROUND_GREEN;
+        }
+        break;
+    }
+
+    SetConsoleTextAttribute (m_stdHandle.out, attributes);
 }

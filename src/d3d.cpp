@@ -31,7 +31,7 @@ namespace ResidentEvil4
             nullptr
         );
 
-        const Vertex vertices[] = {
+        Vertex vertices[] = {
             { from.x, from.y, 0.0f, 1.0f, color },
             { to.x, to.y, 0.0f, 1.0f, color }
         };
@@ -63,8 +63,8 @@ namespace ResidentEvil4
             const DWORD color
         )
     {
-        const float x = pos.x, y = pos.y;
-        const D3DXVECTOR2 corners[] = {
+        float x = pos.x, y = pos.y;
+        D3DXVECTOR2 corners[] = {
             /* Top left. */
             { x, y },
             /* Top right. */
@@ -73,7 +73,7 @@ namespace ResidentEvil4
             { x + w, y - h },
             /* Bottom left. */
             { x, y - h }
-        };
+        };        
         
         drawLine (device, corners[0], corners[1], color);
         drawLine (device, corners[1], corners[2], color);

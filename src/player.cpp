@@ -159,7 +159,7 @@ namespace ResidentEvil4
         u.normalize();
         
         /*Vector3<float> i(1.0f, 0.0f, 0.0f);
-        u.m_z = 0;
+        u.m_z = 0.0f;
         float fixedHorizontalAngle = std::acos( i.dot(u) );
         m_associatedObject->m_bodyHorizontalRotation = (
             (u.m_y > 0.0f) ? fixedHorizontalAngle : -fixedHorizontalAngle
@@ -172,11 +172,13 @@ namespace ResidentEvil4
         auto myPos = m_associatedObject->m_position;
         auto myRot = m_associatedObject->m_bodyHorizontalRotation;
         
-        std::cout << "My pos : (" << myPos.m_x << ", " << myPos.m_y <<
+        std::ostringstream s;
+        s << "My pos : (" << myPos.m_x << ", " << myPos.m_y <<
             ", " << myPos.m_z << ")" << std::endl;
-        std::cout << "Enemy pos : (" << enemyPos.m_x << ", " << enemyPos.m_y <<
+        s << "Enemy pos : (" << enemyPos.m_x << ", " << enemyPos.m_y <<
             ", " << enemyPos.m_z << ")" << std::endl;
-        std::cout << "My rot : " << myRot << std::endl;
+        s << "My rot : " << myRot << std::endl;
+        Console::write ( s.str () );
     }
 #endif
 

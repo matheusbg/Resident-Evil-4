@@ -2,8 +2,6 @@
 #include "cheat-manager.h"
 #include "d3d.h"
 
-#include "utils/console.h"
-
 
 DWORD WINAPI unloadThread (LPVOID args)
 {
@@ -12,7 +10,7 @@ DWORD WINAPI unloadThread (LPVOID args)
     D3D::unhook ();
 
 #ifdef _DEBUG
-    detachConsole ();
+    Console::detach ();
 #endif
 
     FreeLibraryAndExitThread( (HMODULE)args, 0 );
@@ -26,7 +24,7 @@ DWORD WINAPI mainThread (LPVOID args)
     
 #ifdef _DEBUG
     /* Setup debugging console. */
-    bindConsole (true, true, true);
+    Console::bind ("Resident Evil 4");
 #endif
 
     D3D::hook ();
