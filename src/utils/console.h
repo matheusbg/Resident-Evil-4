@@ -1,8 +1,13 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
-class Console
+#include "singleton.h"
+
+
+class Console : public Singleton<Console>
 {
+    friend class Singleton<Console>;
+
 public:
     enum class Colors
     {
@@ -16,21 +21,21 @@ public:
     };
     
 
-    static void bind (
-        const LPCTSTR name,
+    void bind (
+        const LPCSTR name,
         const bool topmost = false,
         const Colors textColor = Colors::WHITE,
-        const LONG x = 0,
-        const LONG y = 0,
-        const LONG width = 0,
-        const LONG height = 0
+        const int x = 0,
+        const int y = 0,
+        const int width = 0,
+        const int height = 0
     );
-    static void detach ();
+    void detach ();
 
-    static void write (const std::string &message);
-    static void clear ();
+    void print (const std::string &message) const;
+    void clear () const;
 
-    static void setTextColor (const Colors color);
+    void setTextColor (const Colors color) const;
 
 protected:
 private:
@@ -40,14 +45,17 @@ private:
     } StdHandle;
 
     
-    static bool m_isBound;
+    bool m_isBound;
 
-    static StdHandle m_stdHandle;
+    StdHandle m_stdHandle;
 
-    static HWND m_wnd;
+    HWND m_wnd;
 
 
-    static void adjust (LONG x, LONG y, LONG width, LONG height);
+    Console ();
+    ~Console ();
+    
+    void adjust (int x, int y, int width, int height);
     
 };
 

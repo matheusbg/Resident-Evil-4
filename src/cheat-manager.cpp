@@ -21,7 +21,7 @@ namespace ResidentEvil4
         {
             /* [Hack-ish]
                We need to keep updating the player's associated object pointer 
-               since the game changes it in some cases (switching stages is an
+               because the game changes it in some cases (switching stages is an
                example). It is possible to hook the function(s) that changes
                it, but this will do for now. */
             m_player.m_associatedObject = *(Object**)g_playerAddress;

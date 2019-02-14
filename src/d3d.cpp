@@ -8,12 +8,32 @@
 
 namespace ResidentEvil4
 {
-    unsigned long** D3D::m_d3d9VTable;
+    HRESULT WINAPI endSceneHook (IDirect3DDevice9* device)
+    {
+        if ( CheatManager::getInstance ().isCheatToggled (Player::TogglingCheats::ESP) )
+        {
+            D3D::getInstance().drawRectangle (
+                device,
+                { 250.0f, 250.0f },
+                100.0f,
+                100.0f,
+                D3DCOLOR_XRGB (0xFF, 0x0, 0x0)
+            );
+        }
 
-    using EndScene = HRESULT (WINAPI*) (IDirect3DDevice9*);
-    EndScene D3D::m_originalEndSceneFn;
-
+        return D3D::getInstance().m_fnOriginalEndScene (device);
+    }
     
+    
+    D3D::D3D ()
+    {
+    }
+
+    D3D::~D3D ()
+    {
+    }
+    
+
     void D3D::drawLine (
             IDirect3DDevice9* const device,
             const D3DXVECTOR2 &from,
@@ -31,15 +51,14 @@ namespace ResidentEvil4
             nullptr
         );
 
-        Vertex vertices[] = {
-            { from.x, from.y, 0.0f, 1.0f, color },
-            { to.x, to.y, 0.0f, 1.0f, color }
-        };
-
         void* data;
         vertexBuffer->Lock (0, 0, &data, 0);
         {
-            memcpy ( data, vertices, sizeof (vertices) );
+            Vertex vertices[] = {
+                { from.x, from.y, 0.0f, 1.0f, color },
+                { to.x, to.y, 0.0f, 1.0f, color }
+            };
+            std::memcpy ( data, vertices, sizeof (vertices) );
         }
         vertexBuffer->Unlock ();
 
@@ -57,13 +76,13 @@ namespace ResidentEvil4
     
     void D3D::drawRectangle (
             IDirect3DDevice9* const device,
-            const D3DXVECTOR2 &pos,
-            const float w,
-            const float h,
+            const D3DXVECTOR2 &origin,
+            const FLOAT w,
+            const FLOAT h,
             const DWORD color
         )
     {
-        float x = pos.x, y = pos.y;
+        FLOAT x = origin.x, y = origin.y;
         D3DXVECTOR2 corners[] = {
             /* Top left. */
             { x, y },
@@ -79,17 +98,6 @@ namespace ResidentEvil4
         drawLine (device, corners[1], corners[2], color);
         drawLine (device, corners[2], corners[3], color);
         drawLine (device, corners[3], corners[0], color);
-    }
-    
-    
-    HRESULT WINAPI D3D::EndSceneHook (IDirect3DDevice9* device)
-    {
-        if ( CheatManager::getInstance().isCheatToggled (Player::TogglingCheats::ESP) )
-        {
-            drawRectangle ( device, { 250.0f, 250.0f }, 100.0f, 100.0f, D3DCOLOR_XRGB (0xFF, 0x0, 0x0) );
-        }
-        
-        return m_originalEndSceneFn (device);
     }
     
 
@@ -113,11 +121,11 @@ namespace ResidentEvil4
         bool hooksResult = false;
 
         /* Hook EndScene. */
-        hooksResult = []() -> bool
+        hooksResult = [&]() -> bool
                       {
-                          m_originalEndSceneFn = (EndScene)m_d3d9VTable[42];
-                          if (MH_CreateHook (m_d3d9VTable[42], &EndSceneHook,
-                              (void**)&m_originalEndSceneFn) != MH_OK)
+                          m_fnOriginalEndScene = (EndScene)m_d3d9VTable[42];
+                          if (MH_CreateHook (m_d3d9VTable[42], endSceneHook,
+                              (void**)&m_fnOriginalEndScene) != MH_OK)
                           {
                               return false;
                           }

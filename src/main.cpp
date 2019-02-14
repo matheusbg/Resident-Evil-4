@@ -7,10 +7,10 @@ DWORD WINAPI unloadThread (LPVOID args)
 {
     using namespace ResidentEvil4;
 
-    D3D::unhook ();
+    D3D::getInstance().unhook ();
 
 #ifdef _DEBUG
-    Console::detach ();
+    Console::getInstance().detach ();
 #endif
 
     FreeLibraryAndExitThread( (HMODULE)args, 0 );
@@ -24,10 +24,10 @@ DWORD WINAPI mainThread (LPVOID args)
     
 #ifdef _DEBUG
     /* Setup debugging console. */
-    Console::bind ("Resident Evil 4");
+    Console::getInstance().bind ("Resident Evil 4");
 #endif
 
-    D3D::hook ();
+    D3D::getInstance().hook ();
 
     /* Cheat's loop. */
     CheatManager::getInstance().work();    

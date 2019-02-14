@@ -1,5 +1,5 @@
-#ifndef GLOBAL_H
-#define GLOBAL_H
+#ifndef ADDRESSES_H
+#define ADDRESSES_H
 
 namespace ResidentEvil4
 {

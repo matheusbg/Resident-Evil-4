@@ -9,12 +9,10 @@ namespace ResidentEvil4
 {
     class CheatManager : public Singleton<CheatManager>
     {
+        friend class Singleton<CheatManager>;
+    
     public:
-        CheatManager ();
-        ~CheatManager ();
-
-
-        bool isCheatToggled (const Player::TogglingCheats cheat)
+        bool isCheatToggled (const Player::TogglingCheats cheat) const
         {
             return m_player.m_togglingCheatsStatus[ GET_ENUM_VALUE(cheat) ];
         }
@@ -28,6 +26,9 @@ namespace ResidentEvil4
         bool m_isWorking;
 
 
+        CheatManager ();
+        ~CheatManager ();
+        
         void manageHotkeys ();
         void manageTeleportCheat ();
 

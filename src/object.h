@@ -19,7 +19,7 @@ namespace ResidentEvil4
             ENTITY = 0x009D3558,
         };
         
-        typedef struct ArmsInformation
+        typedef struct
         {
             unsigned char gap[0x28];
             float verticalRotation, horizontalRotation;

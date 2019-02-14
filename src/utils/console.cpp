@@ -2,26 +2,28 @@
 #include "console.h"
 
 
-bool Console::m_isBound = false;
+Console::Console () :
+    m_isBound { false }
+{
+}
 
-Console::StdHandle Console::m_stdHandle;
+Console::~Console ()
+{
+}
 
-HWND Console::m_wnd;
 
-
-void Console::adjust (LONG x, LONG y, LONG width, LONG height)
+void Console::adjust (int x, int y, int width, int height)
 {
     if (x == 0 && y == 0 && width == 0 && height == 0)
     {
-        RECT desktopRect;
-        auto desktopHandle = GetDesktopWindow ();
-        GetWindowRect (desktopHandle, &desktopRect);
-        
         RECT consoleRect;
         GetWindowRect (m_wnd, &consoleRect);
         width = consoleRect.right - consoleRect.left;
         height = consoleRect.bottom - consoleRect.top;
-
+        
+        RECT desktopRect;
+        HWND desktopWnd = GetDesktopWindow ();
+        GetWindowRect (desktopWnd, &desktopRect);
         x = (desktopRect.right - desktopRect.left - width) / 2;
         y = (desktopRect.bottom - desktopRect.top - height) / 2;
     }
@@ -30,13 +32,13 @@ void Console::adjust (LONG x, LONG y, LONG width, LONG height)
 }
 
 void Console::bind (
-        const LPCTSTR name,
+        const LPCSTR name,
         const bool topmost,
         const Colors textColor,
-        const LONG x,
-        const LONG y,
-        const LONG width,
-        const LONG height
+        const int x,
+        const int y,
+        const int width,
+        const int height
     )
 {
     /* Attach a console to our current process.
@@ -70,11 +72,10 @@ void Console::detach ()
     if (!m_isBound) return;
     
     FreeConsole ();
-
     m_isBound = false;
 }
 
-void Console::write (const std::string &message)
+void Console::print (const std::string &message) const
 {
     if (!m_isBound) return;
     
@@ -88,14 +89,14 @@ void Console::write (const std::string &message)
     );
 }
 
-void Console::clear ()
+void Console::clear () const
 {
     if (!m_isBound) return;
     
     system ("cls");
 }
 
-void Console::setTextColor (const Colors color)
+void Console::setTextColor (const Colors color) const
 {
     if (!m_isBound) return;
     

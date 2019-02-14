@@ -152,7 +152,7 @@ namespace ResidentEvil4
 #ifdef _DEBUG
     void Player::debug ()
     {
-        auto closestEnemy = getClosestEnemy();
+        Object* closestEnemy = getClosestEnemy();
         if (closestEnemy == nullptr) return;
         
         auto u = closestEnemy->m_position - m_associatedObject->m_position;
@@ -170,7 +170,7 @@ namespace ResidentEvil4
 
         auto enemyPos = closestEnemy->m_position;
         auto myPos = m_associatedObject->m_position;
-        auto myRot = m_associatedObject->m_bodyHorizontalRotation;
+        float myRot = m_associatedObject->m_bodyHorizontalRotation;
         
         std::ostringstream s;
         s << "My pos : (" << myPos.m_x << ", " << myPos.m_y <<
@@ -178,7 +178,7 @@ namespace ResidentEvil4
         s << "Enemy pos : (" << enemyPos.m_x << ", " << enemyPos.m_y <<
             ", " << enemyPos.m_z << ")" << std::endl;
         s << "My rot : " << myRot << std::endl;
-        Console::write ( s.str () );
+        Console::getInstance().print ( s.str () );
     }
 #endif
 

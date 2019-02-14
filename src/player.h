@@ -10,15 +10,12 @@
 
 namespace ResidentEvil4
 {
-    constexpr float DEFAULT_PLAYER_TELEPORT_DISTANCE = 300.0f,
-                    DISTANCE_RATE_OF_CHANGE = 100.0f;
-
-
 #define GET_ENUM_VALUE(enumType) static_cast<unsigned long>(enumType)
-
 
     class Player : Object
     {
+        friend class CheatManager;
+    
     public:
         enum class TogglingCheats
         {
@@ -26,9 +23,7 @@ namespace ResidentEvil4
             ESP,
             END
         };
-        
 
-        friend class CheatManager;
         
         Player (Object* const associatedObject);
         ~Player ();
@@ -53,6 +48,10 @@ namespace ResidentEvil4
 
     protected:
     private:
+        const float DEFAULT_PLAYER_TELEPORT_DISTANCE = 300.0f,
+                    DISTANCE_RATE_OF_CHANGE = 100.0f;
+
+        
         /* Hack-ish. Maybe there is a better (OO) way? */
         Object* m_associatedObject;
 
